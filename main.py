@@ -1,6 +1,8 @@
-from flask import Flask, render_template
+from fastapi import FastAPI, Request, Form
+from fastapi.templating import Jinja2Templates
 
-app = Flask(__name__)
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
 # Sample data - replace with your own dynamic data source
 posts = [
@@ -8,9 +10,10 @@ posts = [
     {'author': 'Jane Smith', 'title': 'Blog Post 2', 'content': 'Second post content', 'date_posted': 'June 2, 2023'}
 ]
 
-@app.route('/')
-def home():
-    return render_template('home.html', posts=posts)
+@app.get('/')
+async def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request, "posts": posts})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="localhost", port=8000)
